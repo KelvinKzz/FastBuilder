@@ -1,0 +1,7 @@
+rootProject.name = "FastBuilder"
+include ':fastbuilder-sample-android'
+include ':fastbuilder-cli'
+include ':fastbuilder-lib'
+include ':fastbuilder-hotpatch'
+include ':fastbuilder-plugin'
+include ':fastbuilder-sample-library'

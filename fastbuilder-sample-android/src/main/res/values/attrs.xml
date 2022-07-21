@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 半圆弧矩阵形 -->
+    <declare-styleable name="RoundRectLayout">
+        <attr name="rrl_background_color" format="color" />
+        <attr name="rrl_shadow_color" format="color" />
+        <attr name="rrl_shadow_radius" format="dimension" />
+    </declare-styleable>
+</resources>

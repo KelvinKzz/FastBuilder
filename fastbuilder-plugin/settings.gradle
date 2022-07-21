@@ -1,0 +1,2 @@
+include ':fastbuilder-lib'
+project(':fastbuilder-lib').projectDir = new File('../fastbuilder-lib')

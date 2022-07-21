@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.gaoding.fastbuilder.RoundRectLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/round_rect_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:padding="15dp"
+    app:rrl_background_color="@color/white"
+    app:rrl_shadow_color="#14000000"
+    app:rrl_shadow_radius="10dp">
+
+    <TextView
+        android:id="@+id/tv_open_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="5dp"
+        android:singleLine="true"
+        android:text="13sp"
+        android:textColor="#33383E"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="手机相册" />
+
+    <ImageView
+        android:id="@+id/iv_open_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_photo_picker_arrow_up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_open_gallery"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</com.gaoding.fastbuilder.RoundRectLayout>

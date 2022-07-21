@@ -1,0 +1,173 @@
+import com.android.build.gradle.internal.res.LinkApplicationAndroidResourcesTask
+import com.android.sdklib.BuildToolInfo
+
+apply plugin: 'kotlin-android'
+apply plugin: 'com.android.application'
+apply plugin: 'com.gaoding.fastbuilder'
+
+builder {
+    applicationName = 'com.gaoding.fastbuilder.MyApplication#onCreate'
+}
+
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        applicationId "com.gaoding.fastbuilder"
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions ("channel", "env")
+    productFlavors {
+        // 根据渠道分类
+        common { // 通用渠道，
+            dimension "channel"
+        }
+
+        // 根据环境分类
+        // 线上环境
+        product {
+            dimension "env"
+        }
+        productArm64 {
+            dimension "env"
+        }
+        //开发环境
+        develop {
+            dimension "env"
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    aaptOptions {
+        cruncherEnabled = false
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation "com.squareup:kotlinpoet:1.10.2"
+    api project(':fastbuilder-sample-library')
+}
+//val android = project.extensions.findByType(AppExtension::class.java)
+////缓存id aapt2
+//FileUtil.ensumeDir(File(BuildUtils.getFastBuildResourcesPath(project)))
+//val publicTxtPath = BuildUtils.getFastBuildResourcesPath(project) + "/public.txt"
+//android?.aaptOptions?.additionalParameters("--emit-ids", publicTxtPath)
+//if (File(publicTxtPath).exists()) {
+//    Log.i("--stable-ids $publicTxtPath")
+//    android?.aaptOptions?.additionalParameters("-v", "--stable-ids", publicTxtPath)
+//}
+
+//afterEvaluate {
+//    def android = project.getExtensions().findByName('android')
+//    File publicTxtFile = project.rootProject.file('public.xml')
+//    println("aaptOptions: ${android.aaptOptions}")
+//    android.aaptOptions.additionalParameters("-v", "--emit-ids", publicTxtFile.path)
+//}
+
+project.tasks.findByName("preBuild")?.doLast {
+    def android = project.getExtensions().findByName('android')
+    File publicTxtFile = project.rootProject.file('public.xml')
+    android.aaptOptions.additionalParameters("-v", "--emit-ids", publicTxtFile.path)
+}
+
+//project.afterEvaluate {
+//    if (project.plugins.hasPlugin("com.android.application")) {
+//        def android = project.getExtensions().findByName('android')
+//        android.aaptOptions.additionalParameters("-v", "--emit-ids", publicTxtFile.path)
+////        android.getApplicationVariants().all { def variant ->
+//////            //资源打包任务
+//////            def processResourcesTask = project.tasks.getByName("process${variant.name.capitalize()}Resources")
+//////            if (!processResourcesTask) {
+//////                project.logger.error "processResourcesTask is not fount"
+//////                return
+//////            }
+//////
+//////            println("processResourcesTask: ${processResourcesTask}")
+//////
+//////            def aaptOptions = processResourcesTask.aaptOptionsInput
+//////            println("aaptOptions: ${aaptOptions}")
+//////            println("aaptOptions2: ${aaptOptions.aaptOptions} ")
+//////            if (aaptOptions.aaptOptions.additionalParameters == null) {
+//////                additionalParameters.additionalParameters = new ArrayList<String>()
+//////            }
+//////
+//////            //aapt2.0 需要固定的资源文件导出，只要该文件存在，则再新增资源参与打包时不会影响该文件内的id
+//////            File publicTxtFile = project.rootProject.file('public.txt')
+//////                println("additionalParameters: ${aaptOptions.additionalParameters}")
+//////            //public文件存在，则应用，不存在则生成
+//////            if (publicTxtFile.exists()) {
+//////                project.logger.error "${publicTxtFile} exists, apply it."
+//////                //aapt2添加--stable-ids参数应用
+//////                aaptOptions.additionalParameters.addAll("--stable-ids", "${publicTxtFile.path}")
+//////            } else {
+//////                project.logger.error "${publicTxtFile} not exists, generate it."
+//////                //aapt2添加--emit-ids参数生成
+//////                aaptOptions.additionalParameters.addAll("--emit-ids", "${publicTxtFile.path}")
+//////            }
+////
+////            //资源合并任务
+////            def mergeResourceTask = project.tasks.findByName("merge${variant.getName().capitalize()}Resources")
+////            if (mergeResourceTask) {
+////                mergeResourceTask.doLast {
+////                    //目标转换文件，注意public.xml上级目录必须带values目录，否则aapt2执行时会报非法文件路径
+////                    File publicXmlFile = new File(project.buildDir, "intermediates/res/public/${variant.getDirName()}/values/public.xml")
+////
+////                    if (!publicTxtFile.exists()) {
+////                        project.logger.error("public.txt is not exist")
+////                        return
+////                    }
+////
+////                    //转换public.txt文件为publicXml文件
+////                    convertPublicTxtToPublicXml(project, publicTxtFile, publicXmlFile, false)
+////
+////                    def variantData = variant.getMetaClass().getProperty(variant, 'variantData')
+////                    def mBuildToolInfo = variantData.getScope().getGlobalScope().getAndroidBuilder().getTargetInfo().getBuildTools()
+////                    Map<BuildToolInfo.PathId, String> mPaths = mBuildToolInfo.getMetaClass().getProperty(mBuildToolInfo, "mPaths") as Map<BuildToolInfo.PathId, String>
+////
+////                    project.exec(new Action<ExecSpec>() {
+////                        @Override
+////                        void execute(ExecSpec execSpec) {
+////                            execSpec.executable "${mPaths.get(BuildToolInfo.PathId.AAPT2)}"
+////                            execSpec.args("compile")
+////                            execSpec.args("--legacy")
+////                            execSpec.args("-o")
+////                            execSpec.args("${mergeResourceTask.outputDir}")
+////                            execSpec.args("${publicXmlFile}")
+////                        }
+////                    })
+////                }
+////            }
+////        }
+//    }
+//}

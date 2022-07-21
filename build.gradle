@@ -1,0 +1,41 @@
+buildscript {
+    ext.kotlin_version = '1.5.30'
+
+    repositories {
+        maven {
+            url uri("./maven")
+        }
+        maven {
+            url 'http://maven.gdm.gaoding.com/nexus/content/groups/gaoding-maven/'
+        }
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.gaoding.fastbuilder:plugin:1.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        maven {
+            url uri("./maven")
+        }
+        maven {
+            url 'http://maven.gdm.gaoding.com/nexus/content/groups/gaoding-maven/'
+        }
+        mavenLocal()
+        mavenCentral()
+        google()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation project(':fastbuilder-lib')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+shadowJar  {
+    manifest {
+        attributes 'Main-Class': 'com.gaoding.fastbuild.cli.Main'
+    }
+}
+
+task buildJar(type: Copy) {
+    def fromFile = new File(project.buildDir.getPath(), "libs/fastbuilder-cli-all.jar").getPath()
+    def intoFile = new File(project.getRootDir(), "/fastbuilder_tool/lib").getPath()
+    from fromFile
+    into intoFile
+    rename 'fastbuilder-cli-all.jar', 'hot.jar'
+}
+
+buildJar.dependsOn(shadowJar)
